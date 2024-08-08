@@ -1,0 +1,52 @@
+<!-- src/views/index.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scissor URL Shortener</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        nav {
+            margin-bottom: 20px;
+        }
+        nav a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: #007BFF;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        form {
+            margin-top: 20px;
+        }
+  </style>
+</head>
+<body>
+  <div class="container">
+        <h1>Welcome to Scissor</h1>
+        <p>Shorten your URLs quickly and easily!</p>
+        <nav>
+            <a href="/history">Link History</a>
+            <a href="/analytics">Analytics</a>
+            <a href="/login">Log In</a>
+            <a href="/register">Register</a>
+            <a href="/qrcode">Generate QR Code</a>
+        </nav>
+        <form action="/shorten" method="post">
+            <input type="text" name="originalUrl" placeholder="Enter URL to shorten" required>
+            <input type="text" name="customUrl" placeholder="Enter custom URL (optional)">
+            <button type="submit">Shorten</button>
+        </form>
+        <% if (shortUrl) { %>
+            <p>Short URL: <a href="<%= shortUrl %>"><%= shortUrl %></a></p>
+        <% } else if (error) { %>
+            <p style="color: red;"><%= error %></p>
+        <% } %>
+    </div>
+</body>
+</html>
+

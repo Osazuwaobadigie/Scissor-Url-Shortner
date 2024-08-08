@@ -1,0 +1,56 @@
+<!-- src/views/history.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link History</title>
+  <link rel="stylesheet" href="/public/styles.css"> <!-- Include your CSS file for styling -->
+</head>
+<body>
+  <h1>Link History</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Long URL</th>
+        <th>Short URL</th>
+        <th>Clicks</th>
+      </tr>
+    </thead>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link History</title>
+  <link rel="stylesheet" href="/public/styles.css"> <!-- Include your CSS file for styling -->
+</head>
+<body>
+  <h1>Link History</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Long URL</th>
+        <th>Short URL</th>
+        <th>Clicks</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% urls.forEach(url => { %>
+  <% if (url && url.originalUrl && url.shortUrl && url.clicks) { %>
+    <tr>
+      <td><%= url.originalUrl %></td>
+      <td><a href="/<%= url.shortUrl %>"><%= url.shortUrl %></a></td>
+      <td><%= url.clicks %></td>
+    </tr>
+  <% } else { %>
+    <tr>
+      <td colspan="3">Invalid URL object</td>
+    </tr>
+  <% } %>
+<% }) %>
+    </tbody>
+  </table>
+</body>
+</html>
+ 
