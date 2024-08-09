@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
 const urlRoutes = require('./routes/urlRoutes');
 const { protect } = require('./middleware/authMiddleware');
+const urlController = require('./controllers/urlController');
 
 const app = express();
 
@@ -30,7 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 //app.use(limiter);
 
 app.use('/api/auth', authRoutes);
-app.use('/api/urls', protect, urlRoutes); // protect all URL routes
+app.use('/api/urls',  urlRoutes); // protect all URL routes
 
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
@@ -41,25 +42,12 @@ app.get('/', (req, res) => {
 });
 
 // Route to render the history page
-app.get('/history', async (req, res) => {
-  try {
-    const urls = await Url.find();
-    if (!urls || !Array.isArray(urls)) {
-      throw new Error('Invalid URLs response');
-    }
-    res.render('history', { urls });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server Error');
-  }
-});
+app.get('/history', urlController.getLinkHistory);
+
+app.get('/analytics', urlController.getAnalytics);
 
 
 
-app.get('/analytics', (req, res) => {
-  // Fetch analytics data if needed
-  res.render('analytics', { analytics: [] }); // Pass the actual analytics data instead of an empty array
-});
 
 app.get('/login', (req, res) => {
   res.render('login');

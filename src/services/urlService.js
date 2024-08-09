@@ -33,3 +33,20 @@ exports.getLinkHistory = async (originalUrl) => {
   const urls = await Url.find({ originalUrl }).sort({ createdAt: -1 });
   return urls;
 };
+
+
+// Get analytics data
+exports.getAnalyticsData = async () => {
+  try {
+    const urls = await Url.find().sort({ clicks: -1 });
+    const analyticsData = urls.map((url) => ({
+      shortUrl: url.shortUrl,
+      originalUrl: url.originalUrl,
+      clicks: url.clicks,
+    }));
+    return analyticsData;
+  } catch (err) {
+    throw err;
+  }
+};
+

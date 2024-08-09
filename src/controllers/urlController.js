@@ -1,5 +1,5 @@
 // src/controllers/urlController.js
-const { createShortUrl, getUrl, incrementClicks, getLinkHistory } = require('../services/urlService');
+const { createShortUrl, getUrl, incrementClicks, getLinkHistory, getAnalyticsData } = require('../services/urlService');
 
 // shortenUrl
 
@@ -44,12 +44,12 @@ exports.redirectUrl = async (req, res) => {
 const QRCode = require('qrcode');
 
 exports.generateQrCode = async (req, res) => {
-  const shortUrlId = req.body.shortUrlId;
-  if (!shortUrlId) {
-    return res.render('qrcode', { qrCodeUrl: null, error: 'Short URL ID is required' });
+  const shortUrl = req.params.shortUrl;
+  if (!shortUrl) {
+    return res.render('qrcode', { qrCodeUrl: null, error: 'Short URL is required' });
   }
   try {
-    const url = await Url.findById(shortUrlId);
+    const url = await getUrl(shortUrl);
     if (!url) {
       return res.render('qrcode', { qrCodeUrl: null, error: 'Short URL not found' });
     }
@@ -67,16 +67,33 @@ exports.generateQrCode = async (req, res) => {
 
 
 
-// get Analytics
 
+
+
+
+
+
+
+
+
+
+// getAnalytics
 
 exports.getAnalytics = async (req, res) => {
-  const { shortUrl } = req.params;
-  const url = await getUrl(shortUrl);
-  if (!url) {
-    return res.status(404).send('URL not found');
+  try {
+    const analytics = await getAnalyticsData(); // Assuming you have a service function to get analytics data
+
+    // Check if the request expects a JSON response
+    if (req.headers['content-type'] === 'application/json') {
+      res.json({ analytics });
+    } else {
+      // Otherwise, render the EJS template
+      res.render('analytics', { analytics });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
   }
-  res.json({ clicks: url.clicks });
 };
 
 
@@ -91,7 +108,21 @@ exports.getAnalytics = async (req, res) => {
 //getLinkHistory
 
 exports.getLinkHistory = async (req, res) => {
-  const urls = await getLinkHistory(); // Use the service instead of the model
-  res.render('history', { urls });
+  try {
+    const urls = await getLinkHistory(); // Fetch the URLs
+
+    // Check if the request expects a JSON response
+    if (req.headers['content-type'] === 'application/json') {
+      res.json({ urls });
+    } else {
+      // Otherwise, render the EJS template
+      res.render('history', { urls });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
 };
+
+
 
