@@ -6,7 +6,10 @@ const User = require('../models/userModel');
 
 describe('Auth Controller', () => {
   beforeAll(async () => {
-    await mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
   });
 
   afterAll(async () => {
@@ -17,25 +20,75 @@ describe('Auth Controller', () => {
     await User.deleteMany({});
   });
 
-  it('should register a user', async () => {
-    const res = await request(app)
+  it('registers a new user with valid credentials', async () => {
+    const response = await request(app)
       .post('/api/auth/register')
-      .send({ username: 'testuser', email: 'test@example.com', password: 'password123' });
-    
-    expect(res.statusCode).toEqual(201);
-    expect(res.body.user).toHaveProperty('_id');
+      .send({
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'password123',
+      });
+
+    expect(response.statusCode).toEqual(201);
+    expect(response.body.user).toHaveProperty('_id');
   });
 
-  it('should login a user', async () => {
+  it('fails to register with existing username', async () => {
     await request(app)
       .post('/api/auth/register')
-      .send({ username: 'testuser', email: 'test@example.com', password: 'password123' });
-    
-    const res = await request(app)
-      .post('/api/auth/login')
-      .send({ username: 'testuser', password: 'password123' });
+      .send({
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'password123',
+      });
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.body).toHaveProperty('token');
+    const response = await request(app)
+      .post('/api/auth/register')
+      .send({
+        username: 'testuser',
+        email: 'test2@example.com',
+        password: 'password123',
+      });
+
+    expect(response.statusCode).toEqual(400);
+  });
+
+  it('logs in a user with valid credentials', async () => {
+    await request(app)
+      .post('/api/auth/register')
+      .send({
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'password123',
+      });
+
+    const response = await request(app)
+      .post('/api/auth/login')
+      .send({
+        username: 'testuser',
+        password: 'password123',
+      });
+
+    expect(response.statusCode).toEqual(200);
+    expect(response.body).toHaveProperty('token');
+  });
+
+  it('fails to log in with invalid password', async () => {
+    await request(app)
+      .post('/api/auth/register')
+      .send({
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'password123',
+      });
+
+    const response = await request(app)
+      .post('/api/auth/login')
+      .send({
+        username: 'testuser',
+        password: 'wrongpassword',
+      });
+
+    expect(response.statusCode).toEqual(401);
   });
 });
