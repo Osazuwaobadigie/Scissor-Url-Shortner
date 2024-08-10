@@ -1,6 +1,6 @@
 // src/tests/urlModel.test.js
 const mongoose = require('mongoose');
-const Url = require('../models/urlModel');
+const Url = require('../src/models/urlModel');
 
 describe('URL Model', () => {
   // ...

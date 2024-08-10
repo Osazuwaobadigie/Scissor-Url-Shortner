@@ -1,9 +1,9 @@
 // src/tests/urlController.integration.test.js
 const request = require('supertest');
-const app = require('../app');
+const app = require('../src/app');
 const mongoose = require('mongoose');
-const User = require('../models/userModel');
-const Url = require('../models/urlModel');
+const User = require('../src/models/userModel');
+const Url = require('../src/models/urlModel');
 
 describe('URL Controller Integration', () => {
   // ...

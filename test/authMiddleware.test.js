@@ -1,6 +1,6 @@
 // src/tests/authMiddleware.test.js
 const jwt = require('jsonwebtoken');
-const { protect } = require('../middleware/authMiddleware');
+const { protect } = require('../src/middleware/authMiddleware');
 
 const mockRequest = (headers) => ({
   headers,

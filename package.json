@@ -30,8 +30,17 @@
     "valid-url": "^1.0.9"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.25.3",
     "jest": "^29.7.0",
     "nodemon": "^3.1.4",
     "supertest": "^7.0.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/"
+    ]
   }
 }
