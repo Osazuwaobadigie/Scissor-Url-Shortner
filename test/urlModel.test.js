@@ -1,11 +1,15 @@
-// src/tests/urlModel.test.js
+// tests/urlModel.test.js
 const mongoose = require('mongoose');
+// const connectToTestDb = require('../testDbConnection');
 const Url = require('../src/models/urlModel');
+require('dotenv').config();
+const mongoose = require('mongoose');
+
 
 describe('URL Model', () => {
   beforeAll(async () => {
     // Connect to the test database
-    await mongoose.connect(process.env.MONGO_URI, {
+    await mongoose.connect(MONGO_URL_TEST, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });

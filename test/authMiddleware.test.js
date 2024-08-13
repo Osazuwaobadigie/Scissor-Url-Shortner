@@ -1,4 +1,4 @@
-// src/tests/authMiddleware.test.js
+// tests/authMiddleware.test.js
 const jwt = require('jsonwebtoken');
 const { protect } = require('../src/middleware/authMiddleware');
 

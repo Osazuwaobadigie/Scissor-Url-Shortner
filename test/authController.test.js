@@ -1,12 +1,15 @@
-// src/tests/authController.test.js
+// tests/authController.test.js
 const request = require('supertest');
 const app = require('../src/app');
-const mongoose = require('mongoose');
+// const connectToTestDb = require('../testDbConnection');
 const User = require('../src/models/userModel');
+require('dotenv').config();
+const mongoose = require('mongoose');
+
 
 describe('Auth Controller', () => {
   beforeAll(async () => {
-    await mongoose.connect(process.env.MONGO_URI, {
+    await mongoose.connect(process.env.MONGO_URL_TEST, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });

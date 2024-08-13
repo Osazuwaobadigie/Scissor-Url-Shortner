@@ -1,15 +1,18 @@
-// src/tests/urlController.integration.test.js
+// tests/urlController.integration.test.js
 const request = require('supertest');
 const app = require('../src/app');
-const mongoose = require('mongoose');
+// const connectToTestDb = require('../testDbConnection');
 const Url = require('../src/models/urlModel');
+require('dotenv').config();
+const mongoose = require('mongoose');
+
 
 describe('URL Controller Integration', () => {
   let token;
 
   beforeAll(async () => {
     // Connect to the test database
-    await mongoose.connect(process.env.MONGO_URI, {
+    await mongoose.connect(process.env.MONGO_URL_TEST, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
