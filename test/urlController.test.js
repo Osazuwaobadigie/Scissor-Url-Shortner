@@ -1,45 +1,61 @@
 / src/tests/urlController.test.js
 const request = require('supertest');
 const app = require('../src/app');
+const mongoose = require('mongoose');
+const Url = require('../src/models/urlModel');
+const redisClient = require('../utils/cache');
 const { expect } = require('chai');
 
+jest.mock('../utils/cache', () => ({
+  get: jest.fn(),
+  set: jest.fn(),
+}));
+
 describe('URL Shortening', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should create a short URL', async () => {
     const res = await request(app)
       .post('/shorten')
-      .send({ originalUrl: '(link unavailable)' });
+      .send({ originalUrl: 'http://example.com', customUrl: 'exmpl' });
 
-    expect(res.statusCode).toEqual(201);
-    expect(res.body).toHaveProperty('shortUrl');
+    expect(res.statusCode).to.equal(201);
+    expect(res.body).to.have.property('shortUrl');
+    expect(redisClient.set).toHaveBeenCalled();
   });
 
   it('should return 400 for invalid URL', async () => {
     const res = await request(app)
       .post('/shorten')
-      .send({ originalUrl: 'invalid-url' });
+      .send({ originalUrl: 'invalid-url', customUrl: 'invalid' });
 
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).to.equal(400);
   });
 
-  it('should return 409 for already shortened URL', async () => {
-    const res1 = await request(app)
-      .post('/shorten')
-      .send({ originalUrl: '(link unavailable)' });
-
-    const res2 = await request(app)
-      .post('/shorten')
-      .send({ originalUrl: '(link unavailable)' });
-
-    expect(res2.statusCode).toEqual(409);
-  });
-
-  it('should return 400 for missing URL', async () => {
+  it('should return 400 for missing original URL', async () => {
     const res = await request(app)
       .post('/shorten')
-      .send({});
+      .send({ customUrl: 'exmpl' });
 
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).to.equal(400);
+  });
+
+  it('should return 400 for missing custom URL', async () => {
+    const res = await request(app)
+      .post('/shorten')
+      .send({ originalUrl: 'http://example.com' });
+
+    expect(res.statusCode).to.equal(400);
+  });
+
+  it('should redirect to the original URL', async () => {
+    const res = await request(app)
+      .get('/r/exmpl');
+
+    expect(res.statusCode).to.equal(302);
+    expect(res.headers.location).to.equal('http://example.com');
+    expect(redisClient.get).toHaveBeenCalled();
   });
 });
-
-

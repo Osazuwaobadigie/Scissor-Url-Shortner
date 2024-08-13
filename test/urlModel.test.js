@@ -3,14 +3,31 @@ const mongoose = require('mongoose');
 const Url = require('../src/models/urlModel');
 
 describe('URL Model', () => {
-  // ...
+  beforeAll(async () => {
+    // Connect to the test database
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+  });
 
-  it('should create a URL with automatically generated shortUrl', async () => {
-    const url = new Url({ longUrl: '(link unavailable)' });
+  afterAll(async () => {
+    // Disconnect from the test database
+    await mongoose.disconnect();
+  });
+
+  afterEach(async () => {
+    // Clear the URLs collection
+    await Url.deleteMany({});
+  });
+
+  it('should create a URL with required fields', async () => {
+    const url = new Url({ originalUrl: '(link unavailable)', shortUrl: 'short123' });
     const savedUrl = await url.save();
+
     expect(savedUrl._id).toBeDefined();
-    expect(savedUrl.longUrl).toBe('(link unavailable)');
-    expect(savedUrl.shortUrl).toBeDefined();
+    expect(savedUrl.originalUrl).toBe('(link unavailable)');
+    expect(savedUrl.shortUrl).toBe('short123');
   });
 
   it('should fail to create a URL without required fields', async () => {
@@ -24,5 +41,33 @@ describe('URL Model', () => {
     expect(err).toBeDefined();
     expect(err.message).toContain('Url validation failed');
   });
-});
 
+  it('should fail to create a URL with duplicate shortUrl', async () => {
+    const url1 = new Url({ originalUrl: '(link unavailable)', shortUrl: 'duplicate123' });
+    await url1.save();
+
+    const url2 = new Url({ originalUrl: '(link unavailable)', shortUrl: 'duplicate123' });
+    let err;
+    try {
+      await url2.save();
+    } catch (error) {
+      err = error;
+    }
+    expect(err).toBeDefined();
+    expect(err.message).toContain('duplicate key error');
+  });
+
+  it('should set clicks to 0 by default', async () => {
+    const url = new Url({ originalUrl: '(link unavailable)', shortUrl: 'short123' });
+    const savedUrl = await url.save();
+
+    expect(savedUrl.clicks).toBe(0);
+  });
+
+  it('should allow optional customUrl', async () => {
+    const url = new Url({ originalUrl: '(link unavailable)', shortUrl: 'short123', customUrl: 'custom123' });
+    const savedUrl = await url.save();
+
+    expect(savedUrl.customUrl).toBe('custom123');
+  });
+});

@@ -42,6 +42,15 @@ describe('Auth Middleware', () => {
     expect(res.json).toHaveBeenCalledWith({ message: 'Token has expired' });
   });
 
+  it('should return 401 if no token is provided', () => {
+  const req = mockRequest({});
+  const res = mockResponse();
+  protect(req, res, mockNext);
+  expect(res.status).toHaveBeenCalledWith(401);
+  expect(res.json).toHaveBeenCalledWith({ message: 'No token, authorization denied' });
+});
+
+
   it('should call next if token is valid', () => {
     const req = mockRequest({ Authorization: 'Bearer validtoken' });
     const res = mockResponse();

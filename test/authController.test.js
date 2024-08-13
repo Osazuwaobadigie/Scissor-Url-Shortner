@@ -73,6 +73,20 @@ describe('Auth Controller', () => {
     expect(response.body).toHaveProperty('token');
   });
 
+  it('fails to register with missing fields', async () => {
+  const response = await request(app)
+    .post('/api/auth/register')
+    .send({
+      username: 'testuser',
+      // email is missing
+      password: 'password123',
+    });
+
+  expect(response.statusCode).toEqual(400);
+  expect(response.body.errors[0].msg).toEqual('Email is required');
+});
+
+
   it('fails to log in with invalid password', async () => {
     await request(app)
       .post('/api/auth/register')
