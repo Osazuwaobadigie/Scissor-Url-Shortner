@@ -8,6 +8,7 @@ const urlSchema = new mongoose.Schema({
   clicks: { type: Number, default: 0 },
 }, { timestamps: true });
 
+const collectionName = process.env.NODE_ENV === 'test' ? 'urls_test' : 'urls';
 const Url = mongoose.model('Url', urlSchema);
 
 module.exports = Url;

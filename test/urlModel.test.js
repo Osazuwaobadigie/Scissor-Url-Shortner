@@ -1,10 +1,9 @@
 // tests/urlModel.test.js
-// const mongoose = require('mongoose');
-const connectToTestDb = require('../testDbConnection');
+const mongoose = require('mongoose');
 const Url = require('../src/models/urlModel');
 require('dotenv').config();
 
-
+const MONGO_URL_TEST = process.env.MONGO_URL_TEST;
 
 describe('URL Model', () => {
   beforeAll(async () => {

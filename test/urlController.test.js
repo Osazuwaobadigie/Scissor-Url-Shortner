@@ -1,13 +1,13 @@
 // tests/urlController.test.js
 const request = require('supertest');
 const app = require('../src/app');
-const connectToTestDb = require('../testDbConnection');
 const Url = require('../src/models/urlModel');
 const client = require('../src/utils/cache');
 const { expect } = require('chai');
 require('dotenv').config();
-// const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
+const MONGO_URL_TEST = process.env.MONGO_URL_TEST;
 
 jest.mock('../utils/cache', () => ({
   get: jest.fn(),

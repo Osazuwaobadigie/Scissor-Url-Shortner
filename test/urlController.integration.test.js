@@ -1,11 +1,11 @@
 // tests/urlController.integration.test.js
 const request = require('supertest');
 const app = require('../src/app');
-const connectToTestDb = require('../testDbConnection');
-const Url = require('../src/models/urlModel');
 require('dotenv').config();
-// const mongoose = require('mongoose');
+const mongoose = require('mongoose');
+const Url = require('../src/models/urlModel');
 
+const MONGO_URL_TEST = process.env.MONGO_URL_TEST;
 
 
 
