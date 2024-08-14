@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "devStart": "nodemon src/server.js",
+    "start": "node src/server.js",
     "test": "jest"
   },
   "keywords": [],
