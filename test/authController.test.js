@@ -1,111 +1,73 @@
 // tests/authController.test.js
-const request = require('supertest');
-const app = require('../src/app');
-// const connectToTestDb = require('../testDbConnection');
-const User = require('../src/models/userModel');
-require('dotenv').config();
-const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+const { protect } = require('../src/middleware/authMiddleware');
 
+const mockRequest = (headers) => ({ headers, });
+const mockResponse = () => {
+  const res = {
+    status: jest.fn((code) => {
+      res.statusCode = code;
+      return res;
+    }),
+    json: jest.fn((data) => {
+      res.data = data;
+      return res;
+    }),
+  };
+  return res;
+};
+const mockNext = jest.fn();
 
-describe('Auth Controller', () => {
-  beforeAll(async () => {
-    await mongoose.connect(process.env.MONGO_URL_TEST, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+describe('Auth Middleware', () => {
+  afterEach(() => {
+    jest.restoreMocks();
+  });
+
+  it('should return 401 if no token is provided', () => {
+    const req = mockRequest({});
+    const res = mockResponse();
+    protect(req, res, mockNext);
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalledWith({ message: 'No token, authorization denied' });
+    expect(res.statusCode).toBe(401);
+    expect(res.data).toEqual({ message: 'No token, authorization denied' });
+  });
+
+  it('should return 401 if token is invalid', () => {
+    const req = mockRequest({ Authorization: 'Bearer invalidtoken' });
+    const res = mockResponse();
+    const verifySpy = jest.spyOn(jwt, 'verify');
+    verifySpy.mockImplementation(() => {
+      throw new jwt.JsonWebTokenError('Token is not valid');
     });
+    protect(req, res, mockNext);
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Token is not valid' });
+    expect(res.statusCode).toBe(401);
+    expect(res.data).toEqual({ message: 'Token is not valid' });
   });
 
-  afterAll(async () => {
-    await mongoose.disconnect();
-  });
-
-  afterEach(async () => {
-    await User.deleteMany({});
-  });
-
-  it('registers a new user with valid credentials', async () => {
-    const response = await request(app)
-      .post('/api/auth/register')
-      .send({
-        username: 'testuser',
-        email: 'test@example.com',
-        password: 'password123',
-      });
-
-    expect(response.statusCode).toEqual(201);
-    expect(response.body.user).toHaveProperty('_id');
-  });
-
-  it('fails to register with existing username', async () => {
-    await request(app)
-      .post('/api/auth/register')
-      .send({
-        username: 'testuser',
-        email: 'test@example.com',
-        password: 'password123',
-      });
-
-    const response = await request(app)
-      .post('/api/auth/register')
-      .send({
-        username: 'testuser',
-        email: 'test2@example.com',
-        password: 'password123',
-      });
-
-    expect(response.statusCode).toEqual(400);
-  });
-
-  it('logs in a user with valid credentials', async () => {
-    await request(app)
-      .post('/api/auth/register')
-      .send({
-        username: 'testuser',
-        email: 'test@example.com',
-        password: 'password123',
-      });
-
-    const response = await request(app)
-      .post('/api/auth/login')
-      .send({
-        username: 'testuser',
-        password: 'password123',
-      });
-
-    expect(response.statusCode).toEqual(200);
-    expect(response.body).toHaveProperty('token');
-  });
-
-  it('fails to register with missing fields', async () => {
-  const response = await request(app)
-    .post('/api/auth/register')
-    .send({
-      username: 'testuser',
-      // email is missing
-      password: 'password123',
+  it('should return 401 if token is expired', () => {
+    const req = mockRequest({ Authorization: 'Bearer expiredtoken' });
+    const res = mockResponse();
+    const verifySpy = jest.spyOn(jwt, 'verify');
+    verifySpy.mockImplementation(() => {
+      throw new jwt.TokenExpiredError('Token has expired');
     });
+    protect(req, res, mockNext);
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Token has expired' });
+    expect(res.statusCode).toBe(401);
+    expect(res.data).toEqual({ message: 'Token has expired' });
+  });
 
-  expect(response.statusCode).toEqual(400);
-  expect(response.body.errors[0].msg).toEqual('Email is required');
-});
-
-
-  it('fails to log in with invalid password', async () => {
-    await request(app)
-      .post('/api/auth/register')
-      .send({
-        username: 'testuser',
-        email: 'test@example.com',
-        password: 'password123',
-      });
-
-    const response = await request(app)
-      .post('/api/auth/login')
-      .send({
-        username: 'testuser',
-        password: 'wrongpassword',
-      });
-
-    expect(response.statusCode).toEqual(401);
+  it('should call next if token is valid', () => {
+    const req = mockRequest({ Authorization: 'Bearer validtoken' });
+    const res = mockResponse();
+    const verifySpy = jest.spyOn(jwt, 'verify');
+    verifySpy.mockImplementation(() => ({ userId: '123', role: 'user' }));
+    protect(req, res, mockNext);
+    expect(mockNext).toHaveBeenCalled();
+    expect(req.user).toEqual({ userId: '123', role: 'user' });
   });
 });

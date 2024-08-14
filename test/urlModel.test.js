@@ -1,9 +1,9 @@
 // tests/urlModel.test.js
-const mongoose = require('mongoose');
-// const connectToTestDb = require('../testDbConnection');
+// const mongoose = require('mongoose');
+const connectToTestDb = require('../testDbConnection');
 const Url = require('../src/models/urlModel');
 require('dotenv').config();
-const mongoose = require('mongoose');
+
 
 
 describe('URL Model', () => {

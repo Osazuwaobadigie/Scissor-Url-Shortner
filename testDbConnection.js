@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 
 const connectToTestDb = () => {
-  const dbUri = process.env.MONGODB_URI_TEST; // Ensure this is set in your environment variables
+  const dbUri = process.env.MONGODB_URI_TEST; 
 
   mongoose.connect(dbUri, {
     useNewUrlParser: true,

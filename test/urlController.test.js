@@ -1,12 +1,12 @@
 // tests/urlController.test.js
 const request = require('supertest');
 const app = require('../src/app');
-// const connectToTestDb = require('../testDbConnection');
+const connectToTestDb = require('../testDbConnection');
 const Url = require('../src/models/urlModel');
-const redisClient = require('../utils/cache');
+const client = require('../src/utils/cache');
 const { expect } = require('chai');
 require('dotenv').config();
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 
 
 jest.mock('../utils/cache', () => ({

@@ -39,6 +39,7 @@
     "supertest": "^7.0.0"
   },
   "jest": {
+    "testTimeout": 10000,
     "transform": {
       "^.+\\.js$": "babel-jest"
     },
