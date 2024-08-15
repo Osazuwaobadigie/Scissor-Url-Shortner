@@ -40,6 +40,7 @@ Follow these instructions to set up the project locally.
 ### Prerequisites
 
 - Node.js
+- Express
 - Redis (or Memurai)
 
 ### Installation
@@ -53,11 +54,6 @@ Follow these instructions to set up the project locally.
    npm install
 
 
-###  Usage
-
-Provide instructions on how to use the application.
-
-```markdown
 ## Usage
 
 To start the application, use the following command:
@@ -66,11 +62,11 @@ npm start
 
 
 
-###  Running the Tests
+###  Testing Framworks
 
-Explain how to run tests and what the testing framework is.
+Jest and Supertest
 
-```markdown
+
 ## Running the Tests
 
 To run tests, use the following command:
@@ -81,10 +77,9 @@ npm test
 
 ### 8. Configuration
 
-Detail any environment variables or configuration files.
+.env file
+.babelrc
 
-```markdown
-## Configuration
 
 Ensure to set up the following environment variables:
 - `REDIS_HOST`
