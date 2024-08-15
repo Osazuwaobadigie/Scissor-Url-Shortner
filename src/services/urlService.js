@@ -28,7 +28,7 @@ exports.incrementClicks = async (shortUrl) => {
   }
 };
 
-// Get link history (Example implementation, adjust as needed)
+// Get link history 
 exports.getLinkHistory = async (originalUrl) => {
   const urls = await Url.find({ originalUrl }).sort({ createdAt: -1 });
   return urls;

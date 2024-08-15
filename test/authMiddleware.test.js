@@ -22,7 +22,7 @@ const mockNext = jest.fn();
 
 describe('Auth Middleware', () => {
   afterEach(() => {
-    jest.restoreAllMocks(); // Replace jest.restoreMocks with jest.restoreAllMocks
+    jest.restoreAllMocks(); 
   });
 
   it('should return 401 if no token is provided', () => {

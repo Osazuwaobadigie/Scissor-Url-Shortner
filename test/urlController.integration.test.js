@@ -19,7 +19,7 @@ describe('URL Controller Integration', () => {
       useUnifiedTopology: true,
     });
 
-    // Optionally, obtain a valid JWT token for authorized requests
+    
     const authRes = await request(app)
       .post('/api/auth/login')
       .send({ username: 'testuser', password: 'testpassword' });
